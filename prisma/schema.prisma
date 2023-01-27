@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int       @id @default(autoincrement())
+  firstName          String?
+  lastName           String?
+  username           String    @unique
+  email              String    @unique
+  hashedRefreshToken String?
+  password           String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now())
+  agencias           Agencia[]
+}
+
+model Agencia {
+  id             Int               @id @default(autoincrement())
+  legajo         Int               @unique
+  nombre         String
+  createdAt      DateTime          @default(now())
+  transacciones  BankTransaction[]
+  premiosPagados PremioPagado[]
+  premiosTotales PremiosTotales[]
+  userId         Int
+  user           User              @relation(fields: [userId], references: [id])
+}
+
+enum BankTransactionType {
+  debit
+  credit
+  deposit
+}
+
+enum BankTransactionStatus {
+  pending
+  done
+}
+
+enum GameType {
+  Quini6
+  Brinco
+  Loto
+  Loto5
+  SorteoExtraordinario
+  QuinielaPlus
+  Quiniela
+}
+
+enum Lotteries {
+  Provincia
+  Nacional
+  Corddoba
+  SantaFe
+  EntreRios
+  Montevideo
+}
+
+enum LotteryDraws {
+  N_A
+  Previa
+  Primera
+  Matutina
+  MatutinaMontevideo
+  Vespertina
+  Nocturna
+  NocturnaMontevideo
+}
+
+model BankTransaction {
+  id        Int                   @id @default(autoincrement())
+  type      BankTransactionType
+  status    BankTransactionStatus
+  amount    Float
+  dueDate   DateTime
+  agenciaId Int
+  agencia   Agencia               @relation(fields: [agenciaId], references: [id])
+  createdAt DateTime              @default(now())
+}
+
+model PremioPagado {
+  id           Int          @id @default(autoincrement())
+  monto        Float
+  juego        GameType     @default(Quiniela)
+  sorteo       LotteryDraws
+  numeroSorteo Int
+  agenciaId    Int
+  agencia      Agencia      @relation(fields: [agenciaId], references: [id])
+  createdAt    DateTime     @default(now())
+}
+
+model PremiosTotales {
+  id           Int          @id @default(autoincrement())
+  juego        GameType     @default(Quiniela)
+  sorteo       LotteryDraws
+  numeroSorteo Int
+  monto        Float        @default(0)
+  cantidad     Int          @default(1)
+  fechaSorteo  DateTime
+  vencimiento  DateTime
+  agenciaId    Int
+  agencia      Agencia      @relation(fields: [agenciaId], references: [id])
+  createdAt    DateTime     @default(now())
+}

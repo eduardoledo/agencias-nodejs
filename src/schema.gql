@@ -1,0 +1,68 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Agencia {
+  id: Int!
+  legajo: Int!
+  nombre: String!
+  user: User!
+}
+
+input CreateAgenciaInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type LogoutResponse {
+  logOut: Boolean!
+}
+
+type Mutation {
+  createAgencia(createAgenciaInput: CreateAgenciaInput!): Agencia!
+  getNewTokens: NewTokensResponse!
+  logOut(id: Int!): LogoutResponse!
+  removeAgencia(id: Int!): Agencia!
+  signIn(singInInput: SignInInput!): SignResponse!
+  signUp(signUpInput: SignUpInput!): SignResponse!
+  updateAgencia(updateAgenciaInput: UpdateAgenciaInput!): Agencia!
+}
+
+type NewTokensResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type Query {
+  agencia(id: Int!): Agencia!
+  auth: String!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
+}
+
+type SignResponse {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+input SignUpInput {
+  email: String!
+  password: String!
+  username: String!
+}
+
+input UpdateAgenciaInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+type User {
+  accessToken: String!
+  id: Int!
+  refreshToken: String!
+}
