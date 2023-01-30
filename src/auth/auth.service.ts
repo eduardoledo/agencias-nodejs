@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpInput } from './dto/signup.input';
-import { UpdateAuthInput } from './dto/update-auth.input';
 import * as argon from 'argon2';
 import { SignInInput } from './dto/signin.input';
+import { UpdateUserInput } from './dto/updateUser.input';
 
 @Injectable()
 export class AuthService {
@@ -13,15 +13,16 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async signUp(signUpInput: SignUpInput) {
     const hashedPassword = await argon.hash(signUpInput.password);
     const user = await this.prisma.user.create({
       data: {
-        username: signUpInput.username,
         password: hashedPassword,
         email: signUpInput.email,
+        firstName: signUpInput.firstName,
+        lastName: signUpInput.lastName,
       },
     });
 
@@ -41,6 +42,7 @@ export class AuthService {
     if (!user) {
       throw new ForbiddenException('Access Denied');
     }
+    console.log(user.password, signInInput.password);
 
     const doPasswordsMatch = await argon.verify(
       user.password,
@@ -132,5 +134,21 @@ export class AuthService {
       refreshToken,
       user,
     };
+  }
+
+  async updateUser(userId: number, data: UpdateUserInput) {
+    if (data.password) {
+      const hashedPassword = await argon.hash(data.password);
+      data.password = hashedPassword;
+    }else{
+      delete data.password;
+    }
+
+    return await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: data,
+    });
   }
 }

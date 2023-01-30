@@ -13,5 +13,8 @@ export class Agencia {
   nombre: string;
 
   @Field(() => User)
-  user: User;
+  owner: User;
+
+  @Field(() => [User])
+  employees: User[];
 }

@@ -11,10 +11,12 @@ import { CurrentUserId } from './decorators/currentUserId.decorator';
 import { CurrentUser } from './decorators/currentUser.decorator';
 import { UseGuards } from '@nestjs/common';
 import { RefreshTokenGuard } from './guards/refreshToken.guard';
+import { UpdateUserInput } from './dto/updateUser.input';
+import { User } from 'src/user/user.entity';
 
 @Resolver(() => Auth)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Query(() => String, { name: 'auth' })
   findOne() {
@@ -28,9 +30,15 @@ export class AuthResolver {
   }
 
   @Public()
+  @UseGuards(RefreshTokenGuard)
+  @Mutation(() => User)
+  updateUser(@CurrentUserId() userId, @Args('updateUserInput') updateUserInput: UpdateUserInput) {
+    return this.authService.updateUser(userId, updateUserInput);
+  }
+
+  @Public()
   @Mutation(() => SignResponse)
-  signIn(@Args('singInInput') signInInput: SignInInput) {
-    console.log(signInInput);
+  signIn(@Args('signInInput') signInInput: SignInInput) {
     return this.authService.signIn(signInInput);
   }
 

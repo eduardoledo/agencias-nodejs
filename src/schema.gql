@@ -3,15 +3,16 @@
 # ------------------------------------------------------
 
 type Agencia {
+  employees: [User!]!
   id: Int!
   legajo: Int!
   nombre: String!
-  user: User!
+  owner: User!
 }
 
 input CreateAgenciaInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  legajo: Int!
+  nombre: String!
 }
 
 type LogoutResponse {
@@ -23,9 +24,10 @@ type Mutation {
   getNewTokens: NewTokensResponse!
   logOut(id: Int!): LogoutResponse!
   removeAgencia(id: Int!): Agencia!
-  signIn(singInInput: SignInInput!): SignResponse!
+  signIn(signInInput: SignInInput!): SignResponse!
   signUp(signUpInput: SignUpInput!): SignResponse!
   updateAgencia(updateAgenciaInput: UpdateAgenciaInput!): Agencia!
+  updateUser(updateUserInput: UpdateUserInput!): User!
 }
 
 type NewTokensResponse {
@@ -35,6 +37,7 @@ type NewTokensResponse {
 
 type Query {
   agencia(id: Int!): Agencia!
+  agencias: [Agencia!]!
   auth: String!
 }
 
@@ -51,18 +54,31 @@ type SignResponse {
 
 input SignUpInput {
   email: String!
+  firstName: String!
+  lastName: String!
   password: String!
-  username: String!
 }
 
 input UpdateAgenciaInput {
-  """Example field (placeholder)"""
-  exampleField: Int
   id: Int!
+  legajo: Int
+  nombre: String
+}
+
+input UpdateUserInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
 }
 
 type User {
   accessToken: String!
+  agencia: Agencia!
+  agencias: [Agencia!]!
+  email: String!
+  firstName: String!
   id: Int!
+  lastName: String!
   refreshToken: String!
 }

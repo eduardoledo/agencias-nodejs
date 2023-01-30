@@ -3,19 +3,24 @@ import { AgenciaService } from './agencia.service';
 import { Agencia } from './entities/agencia.entity';
 import { CreateAgenciaInput } from './dto/create-agencia.input';
 import { UpdateAgenciaInput } from './dto/update-agencia.input';
+import { CurrentUserId } from 'src/auth/decorators/currentUserId.decorator';
+import { UseGuards } from '@nestjs/common';
+import { RefreshTokenGuard } from 'src/auth/guards/refreshToken.guard';
 
 @Resolver(() => Agencia)
 export class AgenciaResolver {
-  constructor(private readonly agenciaService: AgenciaService) {}
+  constructor(private readonly agenciaService: AgenciaService) { }
 
+  @UseGuards(RefreshTokenGuard)
   @Mutation(() => Agencia)
-  createAgencia(
+  async createAgencia(
+    @CurrentUserId() userId,
     @Args('createAgenciaInput') createAgenciaInput: CreateAgenciaInput,
   ) {
-    return this.agenciaService.create(createAgenciaInput);
+    return await this.agenciaService.create(userId, createAgenciaInput);
   }
 
-  @Query(() => [Agencia], { name: 'agencia' })
+  @Query(() => [Agencia], { name: 'agencias' })
   findAll() {
     return this.agenciaService.findAll();
   }
